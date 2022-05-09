@@ -72,4 +72,27 @@ class PhotoFrameActivity: AppCompatActivity() {
             }
         }
     }
+
+    // 생명주기에 따라 onStart에서 타이머를 켜주고, onStop과 onDestory에서 타이머가 완전히 종료되도록
+    override fun onStop() {
+        super.onStop()
+
+        Log.d("PhotoFrame", "onStop!! timer cancel")
+
+        timer?.cancel()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("PhotoFrame", "onStart!! timer start")
+
+        startTimer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("PhotoFrame", "onDestroy!! timer cancel")
+
+        timer?.cancel()
+    }
 }
