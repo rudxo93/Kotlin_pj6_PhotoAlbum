@@ -18,6 +18,10 @@ class MainActivity : AppCompatActivity() {
         findViewById(R.id.addPhotoButton)
     }
 
+    private val startPhotoFrameModeButton: Button by lazy {
+        findViewById(R.id.startPhotoFrameModeButton)
+    }
+
     // imageView 리스트
    private val imageViewList: List<ImageView> by lazy {
         mutableListOf<ImageView>().apply {
@@ -38,6 +42,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         initAddPhotoButton()
+        initStartPhotoFrameModeButton()
+    }
+
+    private fun initStartPhotoFrameModeButton() {
+        startPhotoFrameModeButton.setOnClickListener {
+            val intent = Intent(this, PhotoFrameActivity::class.java)
+
+            // 인텐트에 데이터 담아서 실행
+            imageUriList.forEachIndexed { index, uri ->
+                intent.putExtra("photo${index}", uri.toString())
+            }
+            intent.putExtra("photoListSize", imageUriList.size)
+
+            startActivity(intent) // 사진액자 엑티비티 실행
+        }
     }
 
     /*
