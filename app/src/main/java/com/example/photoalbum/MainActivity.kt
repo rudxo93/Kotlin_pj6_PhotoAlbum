@@ -1,10 +1,13 @@
 package com.example.photoalbum
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -14,6 +17,21 @@ class MainActivity : AppCompatActivity() {
     private val addPhotoButton: Button by lazy {
         findViewById(R.id.addPhotoButton)
     }
+
+    // imageView 리스트
+   private val imageViewList: List<ImageView> by lazy {
+        mutableListOf<ImageView>().apply {
+            add(findViewById(R.id.imageView11))
+            add(findViewById(R.id.imageView12))
+            add(findViewById(R.id.imageView13))
+
+            add(findViewById(R.id.imageView21))
+            add(findViewById(R.id.imageView22))
+            add(findViewById(R.id.imageView23))
+        }
+    }
+
+    private val imageUriList: MutableList<Uri> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,5 +122,36 @@ class MainActivity : AppCompatActivity() {
         intent.type = "image/*" // 모든 이미지 타입들만 설정 (필터링)
         startActivityForResult(intent, 2000) // 선택된 컨텐츠를 콜백을 통해 받아오려고 (onActivityResult)
         // startActivityForResult : 다음 엑티비티(현재 우리 메인 엑티비티)에 넘겨주기 위해
+    }
+
+    // SAF를 통해 사용자가 내놓은 결과를 그대로 받아서 처리(requestCode 2000번 사용)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) { // 사용자가 사진을 선택한 경우, 켄슬한 경우 모두 처리
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // ok가 아닐 경우는 그냥 반환(취소 등 했을때)
+        if(resultCode != Activity.RESULT_OK) {
+            return
+        }
+
+        when(requestCode) {
+            2000 -> {
+                val selectedImageUri: Uri? = data?.data
+
+                if(selectedImageUri != null) {
+                    if(imageUriList.size == 6) { // 현재 앱에서는 선택가능한 이미지를 최대 6개로 제한, 초과선택하는 경우 토스트메세지
+                        Toast.makeText(this, "이미 사진이 가득 찼습니다.", Toast.LENGTH_SHORT).show()
+                        return
+                    }
+                     // 아닌 경우에만 전역으로 선언해둔 image uri리스트에 추가
+                    imageUriList.add(selectedImageUri)
+                    imageViewList[imageUriList.size - 1].setImageURI(selectedImageUri) // 이미지 추가
+                } else {
+                    Toast.makeText(this, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            else -> {
+                Toast.makeText(this, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
