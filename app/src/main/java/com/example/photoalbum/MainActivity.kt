@@ -71,4 +71,38 @@ class MainActivity : AppCompatActivity() {
             .create()
             .show()
     }
+
+    // 권한이 수락, 거절되면 호출
+    // override하여 권한을 수락, 획득한 경우 사진을 탐색하는 기능이 수행
+    // 거부 시 간단한 토스트메세지를 띄워주도록
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            1000 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // 권한이 부여 됬을 때
+                    navigatePhotos()
+                } else {
+                    Toast.makeText(this, "권한을 거부하셨습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            else -> {
+
+            }
+        }
+    }
+
+    private fun navigatePhotos() {
+        // SAF 기능 사용하여 사진 가져오기
+        // Intent.ACTION_GET_CONTENT : SAF 기능을 실행시켜서 컨텐츠를 가져오는 (안드로이느 내장)엑티비티를 실행
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*" // 모든 이미지 타입들만 설정 (필터링)
+        startActivityForResult(intent, 2000) // 선택된 컨텐츠를 콜백을 통해 받아오려고 (onActivityResult)
+        // startActivityForResult : 다음 엑티비티(현재 우리 메인 엑티비티)에 넘겨주기 위해
+    }
 }
